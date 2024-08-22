@@ -1,0 +1,19 @@
+form{
+    /* width: 50%; */
+    /* flex-wrap: wrap; */
+    justify-content: center;
+    margin: auto ;
+}
+/* .collapse{
+    border: 1px solid black;
+    display: flex;
+    flex-direction: row-reverse;
+} */
+.navbar-nav{
+    /* border: 1px solid black; */
+    display: flex;
+    width: 60%;
+    /* margin-right: 5%; */
+    justify-content: space-around;
+    font-size: 20px;
+}
