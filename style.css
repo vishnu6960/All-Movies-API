@@ -4,11 +4,6 @@ form{
     justify-content: center;
     margin: auto ;
 }
-/* .collapse{
-    border: 1px solid black;
-    display: flex;
-    flex-direction: row-reverse;
-} */
 .navbar-nav{
     /* border: 1px solid black; */
     display: flex;
