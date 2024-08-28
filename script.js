@@ -22,33 +22,49 @@ const mainContainer = document.getElementById('mainContainer')
 const mainContainerTitle = document.getElementById('mainContainerTitle')
 const baseUrl = 'https://image.tmdb.org/t/p/'
 const size = 'w500'
-function display(data, endpoint){
+async function display(data, endpoint){
     mainContainerTitle.innerHTML = ""
     mainContainer.innerHTML = ""
     mainContainerTitle.innerHTML = `<h2>${endpoint.toUpperCase()}</h2>`
     data.forEach((item)=>{
-        let card = document.createElement('div')
-        card.className = 'card'
-        card.innerHTML = `
-            <div class="imageDiv">
-                <img src=${baseUrl}${size}${item.poster_path} class="card-img-top" alt="...">
-            </div>
-            <div class="card-body">
-                <div>
-                    <h5 class="card-title">${item.title || item.name}</h5>
+        genreFun(item).then(genre =>{
+            // console.log(genre)
+            let movieCard = {
+                id: item.id,
+                title: item.title || item.name,
+                poster_path: item.poster_path,
+                genre: genre,
+                release_date: item.release_date,
+                vote_average: item.vote_average
+            }
+            let card = document.createElement('div')
+            card.className = 'card'
+            card.innerHTML = `
+                <div class="imageDiv">
+                    <img src=${baseUrl}${size}${item.poster_path} class="card-img-top2" alt="...">
                 </div>
-                <p><strong>Released on : </strong>${item.release_date}</p>
-                <p class = "rating"><strong>Rating : </strong>${item.vote_average.toFixed(1)}/10</p>
-                <a href=https://www.themoviedb.org/movie/${item.id} class="btn btn-primary">Know More</a>
-            </div>
-        `
-        if(item.vote_average == 0 || item.vote_average == null){
-            card.querySelector(".rating").style.display = "none"
-        }
-        if(item.poster_path != null){
-            mainContainer.appendChild(card)
-        }
-        
+                <div class="card-body">
+                    <div class='titleDiv'>
+                        <h5 class="card-title">${item.title || item.name}</h5>
+                    </div>
+                    <p>${genre}</p>
+                    <p><strong>Released on : </strong>${item.release_date}</p>
+                    <p class = "rating"><strong>Rating : </strong>${item.vote_average.toFixed(1)}/10(${item.vote_count})</p>
+                    <div class="d-flex justify-content-between">
+                        <a href=https://www.themoviedb.org/movie/${item.id} class="btn btn-primary">Know More</a>
+                        <button class = "addFavButton btn-outline-success">❤️</button>
+                    </div>
+                </div>
+            `
+            if(item.vote_average == 0 || item.vote_average == null){
+                card.querySelector(".rating").style.display = "none"
+            }
+            if(item.poster_path != null){
+                mainContainer.appendChild(card)
+            }
+            // console.log(movieCard)
+            card.querySelector(".addFavButton").addEventListener("click", () => addFavouritesFun(movieCard))
+        })  
     })
 }
 
@@ -111,3 +127,42 @@ document.getElementById("searchForm").addEventListener("submit", (e)=>{
     })
     .catch(err => console.error('error:' + err));
 })
+
+
+//finding genre
+async function genreFun(data){
+    let genreArr = data.genre_ids
+    const url = 'https://api.themoviedb.org/3/genre/movie/list?language=en';
+    const options = {
+    method: 'GET',
+    headers: {
+        accept: 'application/json',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNmY1YzIwNjZjYjM4NTFkMTBlZTA2MWY5M2ZiNDA1ZiIsIm5iZiI6MTcyNDc0NDg5Mi44NjA5ODcsInN1YiI6IjYzYTY4OTQ0ZDU1YzNkMDBhN2Y1OGM4YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.H4vpRY7-n2A6ujYagKtvppV22V1J1yfNlM0DQ8gmKLw'
+    }
+    };
+    const res = await fetch(url, options);
+    const json = await res.json();
+    const genres = json.genres.filter(genre => genreArr.includes(genre.id)).map(genre => genre.name);
+
+    // console.log(genres)
+    return genres;
+}
+
+// localStorage.clear()
+//adding cards to favourites
+function addFavouritesFun(data){
+    let favs = JSON.parse(localStorage.getItem('favourites')) || [];
+    console.log(favs)
+    // const exists = favs.some(fav => fav.id === cardData.id);
+    console.log(exists)
+
+    if(!exists){
+        favs.push(data)
+        localStorage.setItem('favourites',JSON.stringify(data))
+        alert(`${data.title} has been added to your favourites`)
+    }
+    else{
+        alert(`${data.title} is already in your favourites`)
+        
+    }
+}
