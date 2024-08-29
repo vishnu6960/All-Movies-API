@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', ()=>{
 
-    const url = 'https://api.themoviedb.org/3/trending/all/day?language=en-US';
+    const url = 'https://api.themoviedb.org/3/trending/all/week?language=en-US';
     const options = {
     method: 'GET',
     headers: {
@@ -82,10 +82,10 @@ document.getElementById("topRatedButton").addEventListener("click", () => movies
 
 
 //popular, nowplaying, upcoming function
-function moviesMore(endpoint){
+async function moviesMore(endpoint){
     // console.log(mainContainer)
     console.log(endpoint)
-    const url = `https://api.themoviedb.org/3/movie/${endpoint}?language=en-US&page=1`;
+    const firstPageUrl = `https://api.themoviedb.org/3/movie/${endpoint}?language=en-US&page=1`;
     const options = {
     method: 'GET',
     headers: {
@@ -94,23 +94,48 @@ function moviesMore(endpoint){
     }
     };
 
-    fetch(url, options)
-    .then(res => res.json())
-    .then(json => {
-        // console.log(json)
-        display(json.results, endpoint)
-    })
-    .catch(err => console.error('error:' + err));
+    try{
+        const firstPageResponse = await fetch(firstPageUrl, options)
+        const firstPageData = await firstPageResponse.json()
+        
+        const totalPages = firstPageData.total_pages;
+        console.log(totalPages)
+
+        // Step 2: Fetch all pages in parallel
+        const pagePromises = [];
+        for (let page = 1; page <= 20; page++) {
+            const url = `https://api.themoviedb.org/3/movie/${endpoint}?language=en-US&page=${page}`
+            pagePromises.push(fetch(url, options).then(res => res.json()));
+        }
+
+        // Step 3: Wait for all the promises to resolve
+        const allPagesData = await Promise.all(pagePromises);
+
+        // Step 4: Combine all results
+        const allResults = allPagesData.flatMap(data => data.results);
+
+        // Display or process the combined results
+        display(allResults, endpoint);
+    } catch(error){
+        console.log('error', error)
+    }
+    // fetch(url, options)
+    // .then(res => res.json())
+    // .then(json => {
+    //     console.log(json)
+    //     display(json.results, endpoint)
+    // })
+    // .catch(err => console.error('error:' + err));
 }
 
 
 //searching movies
-document.getElementById("searchForm").addEventListener("submit", (e)=>{
+document.getElementById("searchForm").addEventListener("submit", async(e)=>{
     e.preventDefault()
     let movieName = document.getElementById("inputMovie").value
     // console.log(typeof movie)
 
-    const url = `https://api.themoviedb.org/3/search/multi?query=${movieName}&include_adult=false&language=en-US&page=1`;
+    const firstPageUrl = `https://api.themoviedb.org/3/search/multi?query=${movieName}&include_adult=false&language=en-US&page=1`;
     const options = {
     method: 'GET',
     headers: {
@@ -119,13 +144,39 @@ document.getElementById("searchForm").addEventListener("submit", (e)=>{
     }
     };
 
-    fetch(url, options)
-    .then(res => res.json())
-    .then(json => {
-        display(json.results, `${movieName} | Search results`)
-        console.log(json)
-    })
-    .catch(err => console.error('error:' + err));
+    try{
+        const firstPageResponse = await fetch(firstPageUrl, options)
+        const firstPageData = await firstPageResponse.json()
+        
+        const totalPages = firstPageData.total_pages;
+        console.log(totalPages)
+
+        // Step 2: Fetch all pages in parallel
+        const pagePromises = [];
+        for (let page = 1; page <= 20; page++) {
+            const url = `https://api.themoviedb.org/3/search/multi?query=${movieName}&include_adult=false&language=en-US&page=${page}`
+            pagePromises.push(fetch(url, options).then(res => res.json()));
+        }
+
+        // Step 3: Wait for all the promises to resolve
+        const allPagesData = await Promise.all(pagePromises);
+
+        // Step 4: Combine all results
+        const allResults = allPagesData.flatMap(data => data.results);
+
+        // Display or process the combined results
+        display(allResults, `${movieName} | Search results`);
+    } catch(error){
+        console.log('error', error)
+    }
+
+    // fetch(url, options)
+    // .then(res => res.json())
+    // .then(json => {
+    //     display(json.results, `${movieName} | Search results`)
+    //     console.log(json)
+    // })
+    // .catch(err => console.error('error:' + err));
 })
 
 
@@ -151,18 +202,89 @@ async function genreFun(data){
 // localStorage.clear()
 //adding cards to favourites
 function addFavouritesFun(data){
-    let favs = JSON.parse(localStorage.getItem('favourites')) || [];
-    console.log(favs)
-    // const exists = favs.some(fav => fav.id === cardData.id);
-    console.log(exists)
-
-    if(!exists){
+    let favs = JSON.parse(localStorage.getItem("favorites")) || []
+    // if(!Array.isArray(favs)){
+    //     favs = []
+    // }
+    
+    let exist = favs.some(item => item.id === data.id)
+    // console.log(exist)
+    if(!exist){
         favs.push(data)
-        localStorage.setItem('favourites',JSON.stringify(data))
-        alert(`${data.title} has been added to your favourites`)
+        localStorage.setItem("favorites", JSON.stringify(favs))
+        alert(`${data.title} has been added to your favorites`)
     }
     else{
-        alert(`${data.title} is already in your favourites`)
-        
+        alert(`${data.title} is already in your favorites`)
     }
 }
+
+//display favorites
+function favoritesDisplay(){
+    console.log("viishn")
+    let favsArr = JSON.parse(localStorage.getItem("favorites")) || []
+    mainContainerTitle.innerHTML = "<h2>Favorites</>"
+    mainContainer.innerHTML = ""
+    if(favsArr.length == 0){
+        mainContainer.innerHTML = `<h5>No Favorites added yet</h5>`
+    }
+    else{
+        favsArr.forEach((item)=>{
+            let card = document.createElement('div')
+            card.className = 'card'
+            card.innerHTML = `
+                <div class="imageDiv">
+                    <img src=${baseUrl}${size}${item.poster_path} class="card-img-top2" alt="...">
+                </div>
+                <div class="card-body">
+                    <div class='titleDiv'>
+                        <h5 class="card-title">${item.title}</h5>
+                    </div>
+                    <p>${item.genre}</p>
+                    <p><strong>Released on : </strong>${item.release_date}</p>
+                    <p class = "rating"><strong>Rating : </strong>${item.vote_average.toFixed(1)}/10(${item.vote_count}) people</p>
+                    <div class="d-flex justify-content-between">
+                        <a href=https://www.themoviedb.org/movie/${item.id} class="btn btn-primary">Know More</a>
+                        <button class = "deleteButton btn-outline-warning">❌</button>
+                    </div>
+                </div>
+            `
+            mainContainer.appendChild(card)
+            card.querySelector(".deleteButton").addEventListener("click", ()=>{
+                card.remove()
+                let index = favsArr.indexOf(item)
+                if(index !== -1){
+                    favsArr.splice(index, 1)
+                }
+                localStorage.setItem("favorites", JSON.stringify(favsArr))
+            })
+        })
+    }
+}
+
+//calling the favorites display function
+document.getElementById("favoritesButton").addEventListener("click", favoritesDisplay)
+
+
+
+//collapsing the navbar list 
+$(document).ready(function () {
+    // Collapse the navbar after clicking a link
+    $('.navbar-nav>li>a').on('click', function(){
+        $('.navbar-collapse').collapse('hide');
+    });
+  
+    // Smooth scrolling to sections
+    $('a.nav-link').on('click', function(event) {
+        if (this.hash !== "") {
+            event.preventDefault();
+            var hash = this.hash;
+  
+            $('html, body').animate({
+                scrollTop: $(hash).offset().top - $('.navbar').outerHeight()
+            }, 100, function(){
+                window.location.hash = hash - $('.navbar').outerHeight();
+            });
+        }
+    });
+  });
