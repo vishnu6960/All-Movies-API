@@ -223,7 +223,8 @@ function addFavouritesFun(data){
 
 //display favorites
 function favoritesDisplay(){
-    console.log("viishn")
+    // console.log("viishn")
+    document.getElementById("footerId").className = "position-absolute-bottom"
     let favsArr = JSON.parse(localStorage.getItem("favorites")) || []
     mainContainerTitle.innerHTML = "<h2>Favorites</>"
     mainContainer.innerHTML = ""
