@@ -224,7 +224,7 @@ function addFavouritesFun(data){
 //display favorites
 function favoritesDisplay(){
     // console.log("viishn")
-    document.getElementById("footerId").className = "position-absolute-bottom"
+    document.getElementById("footerId").style.display = "none"
     let favsArr = JSON.parse(localStorage.getItem("favorites")) || []
     mainContainerTitle.innerHTML = "<h2>Favorites</>"
     mainContainer.innerHTML = ""
@@ -258,6 +258,9 @@ function favoritesDisplay(){
                 let index = favsArr.indexOf(item)
                 if(index !== -1){
                     favsArr.splice(index, 1)
+                }
+                if(favsArr.length == 0){
+                    mainContainer.innerHTML = `<h5>No Favorites added yet</h5>`
                 }
                 localStorage.setItem("favorites", JSON.stringify(favsArr))
             })
