@@ -201,7 +201,7 @@ async function genreFun(data){
     return genres;
 }
 
-// localStorage.clear()
+
 //adding cards to favourites
 function addFavouritesFun(data){
     let favs = JSON.parse(localStorage.getItem("favorites")) || []
