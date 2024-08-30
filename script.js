@@ -52,7 +52,7 @@ async function display(data, endpoint){
                     <p class = "rating"><strong>Rating : </strong>${item.vote_average.toFixed(1)}/10(${item.vote_count})</p>
                     <div class="d-flex justify-content-between">
                         <a href=https://www.themoviedb.org/movie/${item.id} class="btn btn-primary">Know More</a>
-                        <button class = "addFavButton btn-outline-success">❤️</button>
+                        <button class = "addFavButton btn btn-primary">Add ❤️</button>
                     </div>
                 </div>
             `
@@ -62,9 +62,11 @@ async function display(data, endpoint){
             if(item.poster_path != null){
                 mainContainer.appendChild(card)
             }
+            
             // console.log(movieCard)
             card.querySelector(".addFavButton").addEventListener("click", () => addFavouritesFun(movieCard))
         })  
+        
     })
 }
 
@@ -103,7 +105,7 @@ async function moviesMore(endpoint){
 
         // Step 2: Fetch all pages in parallel
         const pagePromises = [];
-        for (let page = 1; page <= 20; page++) {
+        for (let page = 1; page <= 3; page++) {
             const url = `https://api.themoviedb.org/3/movie/${endpoint}?language=en-US&page=${page}`
             pagePromises.push(fetch(url, options).then(res => res.json()));
         }
@@ -245,7 +247,7 @@ function favoritesDisplay(){
                     <p class = "rating"><strong>Rating : </strong>${item.vote_average.toFixed(1)}/10(${item.vote_count}) people</p>
                     <div class="d-flex justify-content-between">
                         <a href=https://www.themoviedb.org/movie/${item.id} class="btn btn-primary">Know More</a>
-                        <button class = "deleteButton btn-outline-warning">❌</button>
+                        <button class = "deleteButton btn btn-danger">Remove ❌</button>
                     </div>
                 </div>
             `

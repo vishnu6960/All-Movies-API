@@ -20,8 +20,10 @@ form{
 .navbar-nav > li:hover{
     background-color: rgb(209, 171, 18);
 }
+main{
+    background-color: #ddd;
+}
 .mainContainer{
-    /* background-color: #ddd; */
     display: grid;
     padding: 10px;
     gap: 20px;
