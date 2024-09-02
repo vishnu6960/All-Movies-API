@@ -121,13 +121,6 @@ async function moviesMore(endpoint){
     } catch(error){
         console.log('error', error)
     }
-    // fetch(url, options)
-    // .then(res => res.json())
-    // .then(json => {
-    //     console.log(json)
-    //     display(json.results, endpoint)
-    // })
-    // .catch(err => console.error('error:' + err));
 }
 
 
