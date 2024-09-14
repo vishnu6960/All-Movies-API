@@ -103,20 +103,16 @@ async function moviesMore(endpoint){
         const totalPages = firstPageData.total_pages;
         console.log(totalPages)
 
-        // Step 2: Fetch all pages in parallel
         const pagePromises = [];
         for (let page = 1; page <= 3; page++) {
             const url = `https://api.themoviedb.org/3/movie/${endpoint}?language=en-US&page=${page}`
             pagePromises.push(fetch(url, options).then(res => res.json()));
         }
 
-        // Step 3: Wait for all the promises to resolve
         const allPagesData = await Promise.all(pagePromises);
 
-        // Step 4: Combine all results
         const allResults = allPagesData.flatMap(data => data.results);
 
-        // Display or process the combined results
         display(allResults, endpoint);
     } catch(error){
         console.log('error', error)
@@ -146,20 +142,16 @@ document.getElementById("searchForm").addEventListener("submit", async(e)=>{
         const totalPages = firstPageData.total_pages;
         console.log(totalPages)
 
-        // Step 2: Fetch all pages in parallel
         const pagePromises = [];
         for (let page = 1; page <= 20; page++) {
             const url = `https://api.themoviedb.org/3/search/multi?query=${movieName}&include_adult=false&language=en-US&page=${page}`
             pagePromises.push(fetch(url, options).then(res => res.json()));
         }
 
-        // Step 3: Wait for all the promises to resolve
         const allPagesData = await Promise.all(pagePromises);
 
-        // Step 4: Combine all results
         const allResults = allPagesData.flatMap(data => data.results);
 
-        // Display or process the combined results
         display(allResults, `${movieName} | Search results`);
     } catch(error){
         console.log('error', error)
@@ -268,12 +260,10 @@ document.getElementById("favoritesButton").addEventListener("click", favoritesDi
 
 //collapsing the navbar list 
 $(document).ready(function () {
-    // Collapse the navbar after clicking a link
     $('.navbar-nav>li>a').on('click', function(){
         $('.navbar-collapse').collapse('hide');
     });
-  
-    // Smooth scrolling to sections
+
     $('a.nav-link').on('click', function(event) {
         if (this.hash !== "") {
             event.preventDefault();
