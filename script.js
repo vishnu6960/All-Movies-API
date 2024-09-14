@@ -264,16 +264,16 @@ $(document).ready(function () {
         $('.navbar-collapse').collapse('hide');
     });
 
-    $('a.nav-link').on('click', function(event) {
-        if (this.hash !== "") {
-            event.preventDefault();
-            var hash = this.hash;
+    // $('a.nav-link').on('click', function(event) {
+    //     if (this.hash !== "") {
+    //         event.preventDefault();
+    //         var hash = this.hash;
   
-            $('html, body').animate({
-                scrollTop: $(hash).offset().top - $('.navbar').outerHeight()
-            }, 100, function(){
-                window.location.hash = hash - $('.navbar').outerHeight();
-            });
-        }
-    });
+    //         $('html, body').animate({
+    //             scrollTop: $(hash).offset().top - $('.navbar').outerHeight()
+    //         }, 100, function(){
+    //             window.location.hash = hash - $('.navbar').outerHeight();
+    //         });
+    //     }
+    // });
   });
