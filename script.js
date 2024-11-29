@@ -1,33 +1,33 @@
-document.addEventListener('DOMContentLoaded', ()=>{
+document.addEventListener('DOMContentLoaded', () => {
 
     const url = 'https://api.themoviedb.org/3/trending/all/week?language=en-US';
     const options = {
-    method: 'GET',
-    headers: {
-        accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNmY1YzIwNjZjYjM4NTFkMTBlZTA2MWY5M2ZiNDA1ZiIsIm5iZiI6MTcyNDMxOTIyMS4zODMwMTgsInN1YiI6IjYzYTY4OTQ0ZDU1YzNkMDBhN2Y1OGM4YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.UH7_9jMTH7jakeLx4_PXkszjAihjvgY4uWeXn_iHelM'
-    }
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNmY1YzIwNjZjYjM4NTFkMTBlZTA2MWY5M2ZiNDA1ZiIsIm5iZiI6MTcyNDMxOTIyMS4zODMwMTgsInN1YiI6IjYzYTY4OTQ0ZDU1YzNkMDBhN2Y1OGM4YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.UH7_9jMTH7jakeLx4_PXkszjAihjvgY4uWeXn_iHelM'
+        }
     };
 
     fetch(url, options)
-    .then(res => res.json())
-    .then(json => {
-        // console.log(json.results)
-        display(json.results, "trending")
-    })
-    .catch(err => console.error('error:' + err));
+        .then(res => res.json())
+        .then(json => {
+            // console.log(json.results)
+            display(json.results, "trending")
+        })
+        .catch(err => console.error('error:' + err));
 })
 
 const mainContainer = document.getElementById('mainContainer')
 const mainContainerTitle = document.getElementById('mainContainerTitle')
 const baseUrl = 'https://image.tmdb.org/t/p/'
 const size = 'w500'
-async function display(data, endpoint){
+async function display(data, endpoint) {
     mainContainerTitle.innerHTML = ""
     mainContainer.innerHTML = ""
     mainContainerTitle.innerHTML = `<h2>${endpoint.toUpperCase()}</h2>`
-    data.forEach((item)=>{
-        genreFun(item).then(genre =>{
+    data.forEach((item) => {
+        genreFun(item).then(genre => {
             // console.log(genre)
             let movieCard = {
                 id: item.id,
@@ -56,17 +56,17 @@ async function display(data, endpoint){
                     </div>
                 </div>
             `
-            if(item.vote_average == 0 || item.vote_average == null){
+            if (item.vote_average == 0 || item.vote_average == null) {
                 card.querySelector(".rating").style.display = "none"
             }
-            if(item.poster_path != null){
+            if (item.poster_path != null) {
                 mainContainer.appendChild(card)
             }
-            
+
             // console.log(movieCard)
             card.querySelector(".addFavButton").addEventListener("click", () => addFavouritesFun(movieCard))
-        })  
-        
+        })
+
     })
 }
 
@@ -84,22 +84,22 @@ document.getElementById("topRatedButton").addEventListener("click", () => movies
 
 
 //popular, nowplaying, upcoming function
-async function moviesMore(endpoint){
+async function moviesMore(endpoint) {
     // console.log(mainContainer)
     console.log(endpoint)
     const firstPageUrl = `https://api.themoviedb.org/3/movie/${endpoint}?language=en-US&page=1`;
     const options = {
-    method: 'GET',
-    headers: {
-        accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNmY1YzIwNjZjYjM4NTFkMTBlZTA2MWY5M2ZiNDA1ZiIsIm5iZiI6MTcyNDY2OTIyNy45MDc3MDEsInN1YiI6IjYzYTY4OTQ0ZDU1YzNkMDBhN2Y1OGM4YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.--sN-KdBvJ_KSAocc6aRip3kPiy0lCKFKePz06C13Cs'
-    }
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNmY1YzIwNjZjYjM4NTFkMTBlZTA2MWY5M2ZiNDA1ZiIsIm5iZiI6MTcyNDY2OTIyNy45MDc3MDEsInN1YiI6IjYzYTY4OTQ0ZDU1YzNkMDBhN2Y1OGM4YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.--sN-KdBvJ_KSAocc6aRip3kPiy0lCKFKePz06C13Cs'
+        }
     };
 
-    try{
+    try {
         const firstPageResponse = await fetch(firstPageUrl, options)
         const firstPageData = await firstPageResponse.json()
-        
+
         const totalPages = firstPageData.total_pages;
         console.log(totalPages)
 
@@ -114,31 +114,31 @@ async function moviesMore(endpoint){
         const allResults = allPagesData.flatMap(data => data.results);
 
         display(allResults, endpoint);
-    } catch(error){
+    } catch (error) {
         console.log('error', error)
     }
 }
 
 
 //searching movies
-document.getElementById("searchForm").addEventListener("submit", async(e)=>{
+document.getElementById("searchForm").addEventListener("submit", async (e) => {
     e.preventDefault()
     let movieName = document.getElementById("inputMovie").value
     // console.log(typeof movie)
 
     const firstPageUrl = `https://api.themoviedb.org/3/search/multi?query=${movieName}&include_adult=false&language=en-US&page=1`;
     const options = {
-    method: 'GET',
-    headers: {
-        accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNmY1YzIwNjZjYjM4NTFkMTBlZTA2MWY5M2ZiNDA1ZiIsIm5iZiI6MTcyNDc0NDg5Mi44NjA5ODcsInN1YiI6IjYzYTY4OTQ0ZDU1YzNkMDBhN2Y1OGM4YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.H4vpRY7-n2A6ujYagKtvppV22V1J1yfNlM0DQ8gmKLw'
-    }
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNmY1YzIwNjZjYjM4NTFkMTBlZTA2MWY5M2ZiNDA1ZiIsIm5iZiI6MTcyNDc0NDg5Mi44NjA5ODcsInN1YiI6IjYzYTY4OTQ0ZDU1YzNkMDBhN2Y1OGM4YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.H4vpRY7-n2A6ujYagKtvppV22V1J1yfNlM0DQ8gmKLw'
+        }
     };
 
-    try{
+    try {
         const firstPageResponse = await fetch(firstPageUrl, options)
         const firstPageData = await firstPageResponse.json()
-        
+
         const totalPages = firstPageData.total_pages;
         console.log(totalPages)
 
@@ -153,7 +153,7 @@ document.getElementById("searchForm").addEventListener("submit", async(e)=>{
         const allResults = allPagesData.flatMap(data => data.results);
 
         display(allResults, `${movieName} | Search results`);
-    } catch(error){
+    } catch (error) {
         console.log('error', error)
     }
 
@@ -168,15 +168,15 @@ document.getElementById("searchForm").addEventListener("submit", async(e)=>{
 
 
 //finding genre
-async function genreFun(data){
+async function genreFun(data) {
     let genreArr = data.genre_ids
     const url = 'https://api.themoviedb.org/3/genre/movie/list?language=en';
     const options = {
-    method: 'GET',
-    headers: {
-        accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNmY1YzIwNjZjYjM4NTFkMTBlZTA2MWY5M2ZiNDA1ZiIsIm5iZiI6MTcyNDc0NDg5Mi44NjA5ODcsInN1YiI6IjYzYTY4OTQ0ZDU1YzNkMDBhN2Y1OGM4YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.H4vpRY7-n2A6ujYagKtvppV22V1J1yfNlM0DQ8gmKLw'
-    }
+        method: 'GET',
+        headers: {
+            accept: 'application/json',
+            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNmY1YzIwNjZjYjM4NTFkMTBlZTA2MWY5M2ZiNDA1ZiIsIm5iZiI6MTcyNDc0NDg5Mi44NjA5ODcsInN1YiI6IjYzYTY4OTQ0ZDU1YzNkMDBhN2Y1OGM4YyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.H4vpRY7-n2A6ujYagKtvppV22V1J1yfNlM0DQ8gmKLw'
+        }
     };
     const res = await fetch(url, options);
     const json = await res.json();
@@ -188,36 +188,36 @@ async function genreFun(data){
 
 
 //adding cards to favourites
-function addFavouritesFun(data){
+function addFavouritesFun(data) {
     let favs = JSON.parse(localStorage.getItem("favorites")) || []
     // if(!Array.isArray(favs)){
     //     favs = []
     // }
-    
+
     let exist = favs.some(item => item.id === data.id)
     // console.log(exist)
-    if(!exist){
+    if (!exist) {
         favs.push(data)
         localStorage.setItem("favorites", JSON.stringify(favs))
         alert(`${data.title} has been added to your favorites`)
     }
-    else{
+    else {
         alert(`${data.title} is already in your favorites`)
     }
 }
 
 //display favorites
-function favoritesDisplay(){
+function favoritesDisplay() {
     // console.log("viishn")
-    document.getElementById("footerId").style.display = "none"
+    // document.getElementById("footerId").style.display = "none"
     let favsArr = JSON.parse(localStorage.getItem("favorites")) || []
     mainContainerTitle.innerHTML = "<h2>Favorites</>"
     mainContainer.innerHTML = ""
-    if(favsArr.length == 0){
+    if (favsArr.length == 0) {
         mainContainer.innerHTML = `<h5>No Favorites added yet</h5>`
     }
-    else{
-        favsArr.forEach((item)=>{
+    else {
+        favsArr.forEach((item) => {
             let card = document.createElement('div')
             card.className = 'card'
             card.innerHTML = `
@@ -238,13 +238,13 @@ function favoritesDisplay(){
                 </div>
             `
             mainContainer.appendChild(card)
-            card.querySelector(".deleteButton").addEventListener("click", ()=>{
+            card.querySelector(".deleteButton").addEventListener("click", () => {
                 card.remove()
                 let index = favsArr.indexOf(item)
-                if(index !== -1){
+                if (index !== -1) {
                     favsArr.splice(index, 1)
                 }
-                if(favsArr.length == 0){
+                if (favsArr.length == 0) {
                     mainContainer.innerHTML = `<h5>No Favorites added yet</h5>`
                 }
                 localStorage.setItem("favorites", JSON.stringify(favsArr))
@@ -260,7 +260,7 @@ document.getElementById("favoritesButton").addEventListener("click", favoritesDi
 
 //collapsing the navbar list 
 $(document).ready(function () {
-    $('.navbar-nav>li>a').on('click', function(){
+    $('.navbar-nav>li>a').on('click', function () {
         $('.navbar-collapse').collapse('hide');
     });
 
@@ -268,7 +268,7 @@ $(document).ready(function () {
     //     if (this.hash !== "") {
     //         event.preventDefault();
     //         var hash = this.hash;
-  
+
     //         $('html, body').animate({
     //             scrollTop: $(hash).offset().top - $('.navbar').outerHeight()
     //         }, 100, function(){
@@ -276,4 +276,4 @@ $(document).ready(function () {
     //         });
     //     }
     // });
-  });
+});
