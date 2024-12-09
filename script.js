@@ -182,7 +182,7 @@ async function genreFun(data) {
     const json = await res.json();
     const genres = json.genres.filter(genre => genreArr.includes(genre.id)).map(genre => genre.name);
 
-    // console.log(genres)
+
     return genres;
 }
 
@@ -208,7 +208,6 @@ function addFavouritesFun(data) {
 
 //display favorites
 function favoritesDisplay() {
-    // console.log("viishn")
     // document.getElementById("footerId").style.display = "none"
     let favsArr = JSON.parse(localStorage.getItem("favorites")) || []
     mainContainerTitle.innerHTML = "<h2>Favorites</>"
